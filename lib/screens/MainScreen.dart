@@ -27,13 +27,17 @@ class _MainScreenState extends State<MainScreen> {
   void scanDevices() async {
     var bluetoothConnectStatus =
         await Permission.bluetoothConnect.request().isGranted;
-    if (bluetoothConnectStatus) {
+    var bluetoothScanStatus =
+        await Permission.bluetoothScan.request().isGranted;
+
+    if (bluetoothConnectStatus && bluetoothScanStatus) {
       EasyLoading.show(status: 'Cihazlar aranıyor...');
       var instance = FlutterBlue.instance;
       instance.startScan(timeout: const Duration(seconds: 15));
       var subscription = instance.scanResults.listen((results) {
         for (ScanResult r in results) {
-          print("${r.device.name} rssi: ${r.rssi}");
+          print(
+              "${r.device.name} rssi: ${r.rssi} type: ${r.device.type.toString()}");
         }
       });
     }
