@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -23,15 +24,19 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  void scanDevices() {
-    EasyLoading.show(status: 'Cihazlar aranıyor...');
-    var instance = FlutterBlue.instance;
-    instance.startScan(timeout: const Duration(seconds: 15));
-    var subscription = instance.scanResults.listen((results) {
-      for (ScanResult r in results) {
-        print("${r.device.name} rssi: ${r.rssi}");
-      }
-    });
+  void scanDevices() async {
+    var bluetoothConnectStatus =
+        await Permission.bluetoothConnect.request().isGranted;
+    if (bluetoothConnectStatus) {
+      EasyLoading.show(status: 'Cihazlar aranıyor...');
+      var instance = FlutterBlue.instance;
+      instance.startScan(timeout: const Duration(seconds: 15));
+      var subscription = instance.scanResults.listen((results) {
+        for (ScanResult r in results) {
+          print("${r.device.name} rssi: ${r.rssi}");
+        }
+      });
+    }
   }
 
   @override
