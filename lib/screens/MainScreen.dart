@@ -32,7 +32,6 @@ class _MainScreenState extends State<MainScreen> {
         print("${r.device.name} rssi: ${r.rssi}");
       }
     });
-    instance.stopScan();
   }
 
   @override
