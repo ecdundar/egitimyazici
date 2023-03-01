@@ -13,6 +13,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Burulas Yazici',
+        debugShowCheckedModeBanner:
+            false, //Sağ üst taraftaki debug etiketini kaldırır.
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
