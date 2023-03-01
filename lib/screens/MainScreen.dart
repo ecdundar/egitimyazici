@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -9,11 +12,27 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  void scanDevices() {
-    print('scanDevices');
-    FlutterBlue.instance.state.toList().then((value) {
-      print(value);
+  void checkBluetoothStatus() {
+    FlutterBlue.instance.state.listen((state) {
+      if (state == BluetoothState.off) {
+        EasyLoading.showInfo("Lütfen bluetooth u açınız...");
+      }
+      if (state == BluetoothState.on) {
+        scanDevices();
+      }
     });
+  }
+
+  void scanDevices() {
+    EasyLoading.show(status: 'Cihazlar aranıyor...');
+    var instance = FlutterBlue.instance;
+    instance.startScan(timeout: const Duration(seconds: 15));
+    var subscription = instance.scanResults.listen((results) {
+      for (ScanResult r in results) {
+        print("${r.device.name} rssi: ${r.rssi}");
+      }
+    });
+    instance.stopScan();
   }
 
   @override
@@ -24,7 +43,7 @@ class _MainScreenState extends State<MainScreen> {
         actions: [
           GestureDetector(
             onTap: () {
-              scanDevices();
+              checkBluetoothStatus();
             },
             child: const Padding(
                 padding: EdgeInsets.only(right: 15, top: 5),
